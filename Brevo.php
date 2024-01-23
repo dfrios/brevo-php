@@ -23,6 +23,21 @@ class Brevo {
    * Send email using template created and stored on Brevo platform
    */
   public function sendEmail(int $templateId, array $data = array()) {
+
+    $dataToSend = [
+      'to' => [
+        [
+          'email' => $data['email'],
+          'name' => $data['firstname'],
+        ]
+      ],
+      'templateId' => $templateId,
+      'params' => [
+        'FIRSTNAME' => $data['firstname'],
+      ],
+    ];
+
+    $response = $this->curlExec('smtp/email', 'POST', $dataToSend);
   }
 
 
@@ -33,10 +48,7 @@ class Brevo {
 
     $contactId = $this->getContact($data['email']);
 
-    // echo $contactId;die();
-
     if ($contactId == 0) {
-
       // Contact does not exist
       $contactId = $this->addContact($data, $listId);
     }
@@ -47,7 +59,6 @@ class Brevo {
 
     return $contactId;
   }
-
 
 
   /**
@@ -118,7 +129,6 @@ class Brevo {
       'api-key: ' . $this->apiKey
     ));
 
-
     if ($proto == 'POST') {
       curl_setopt($curl, CURLOPT_POST, TRUE);
       curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($postVars, JSON_PRETTY_PRINT));
@@ -129,7 +139,6 @@ class Brevo {
 
     if ($proto == 'PUT') {
       curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-      curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
       curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($postVars, JSON_PRETTY_PRINT));
     }
 
