@@ -1,10 +1,12 @@
 <?php
 
+require('CrmInteface.php');
+
 
 /**
  * Class to connect to Brevo API
  */
-class Brevo {
+class Brevo implements CrmInterface {
 
   private $apiKey = "";
   private $baseUrl = "";
