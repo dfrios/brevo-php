@@ -1,6 +1,6 @@
 <?php
 
-require('CrmInteface.php');
+require('./CrmInterface.php');
 
 
 /**
@@ -46,7 +46,7 @@ class Brevo implements CrmInterface {
   /**
    * Add new contact on Brevo platform
    */
-  public function createContact(array $data = array(), int $listId) {
+  public function createContact(array $data = array(), int|string $listId) {
 
     $contactId = $this->getContact($data['email']);
 
@@ -66,7 +66,7 @@ class Brevo implements CrmInterface {
   /**
    * Add contact. Private method
    */
-  private function addContact(array $data = array(), int $listId) {
+  private function addContact(array $data = array(), int $listId) : int|string {
 
     $data = array(
       'email' => $data['email'],
@@ -93,7 +93,7 @@ class Brevo implements CrmInterface {
   /**
    * Get contact on Brevo platform
    */
-  public function getContact(string $email) : int {
+  public function getContact(string $email) : int|string {
 
     $response = $this->curlExec("contacts/{$email}");
     $responseJson = json_decode($response);
@@ -106,7 +106,7 @@ class Brevo implements CrmInterface {
   }
 
 
-  public function addContactToList(string $email, int $listId) : bool {
+  public function addContactToList(string $email, int|string $listId) : bool {
 
     $data = array(
       'emails' => array($email)
