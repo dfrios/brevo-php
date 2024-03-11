@@ -24,18 +24,18 @@ class Brevo implements CrmInterface {
   /**
    * Send email using template created and stored on Brevo platform
    */
-  public function sendEmail(int $templateId, array $data = array()) {
+  public function sendEmail(int|string $templateId, array $data = array()) {
 
     $dataToSend = [
       'to' => [
         [
-          'email' => $data['email'],
-          'name' => $data['firstname'],
+          'email' => $data['EMAIL'],
+          'name' => $data['FIRSTNAME'],
         ]
       ],
       'templateId' => $templateId,
       'params' => [
-        'FIRSTNAME' => $data['firstname'],
+        'FIRSTNAME' => $data['FIRSTNAME'],
       ],
     ];
 
@@ -48,15 +48,18 @@ class Brevo implements CrmInterface {
    */
   public function createContact(array $data = array(), int|string $listId) {
 
-    $contactId = $this->getContact($data['email']);
+    $contactId = $this->getContact($data['EMAIL']);
 
     if ($contactId == 0) {
       // Contact does not exist
+      // echo "Contacto no existe\n";
       $contactId = $this->addContact($data, $listId);
     }
     else {
       // Contact already exists
-      $this->addContactToList($data['email'], $listId);
+      // $this->addContactToList($data['email'], $listId);
+      // echo "Contacto ya existe\n";
+      $this->updateContact($data, $contactId, $listId);
     }
 
     return $contactId;
@@ -69,7 +72,7 @@ class Brevo implements CrmInterface {
   private function addContact(array $data = array(), int $listId) : int|string {
 
     $data = array(
-      'email' => $data['email'],
+      'email' => $data['EMAIL'],
       'emailBlacklisted' => false,
       'smsBlacklisted' => false,
       'updateEnabled' => true,
@@ -78,6 +81,36 @@ class Brevo implements CrmInterface {
     );
 
     $response = $this->curlExec('contacts', "POST", $data);
+    $responseJson = json_decode($response);
+
+    if (isset($responseJson->code)) {
+      if ($responseJson->code == "duplicate_parameter")
+        return "duplicated data";
+    }
+    else {
+      return $responseJson->id;
+    }
+  }
+
+
+  /**
+   * Update contact. Private method
+   */
+  private function updateContact(array $data = array(), int $contactId, int $listId) {
+
+    $attributes = $data['attributes'];
+    $attributes['EMAIL'] = $data['EMAIL'];
+
+    $data = array(
+      'email' => $data['EMAIL'],
+      'emailBlacklisted' => false,
+      'smsBlacklisted' => false,
+      'updateEnabled' => true,
+      'listIds' => array($listId),
+      'attributes' => $attributes
+    );
+
+    $response = $this->curlExec('contacts/' . $contactId, "PUT", $data);
     $responseJson = json_decode($response);
 
     if (isset($responseJson->code)) {
