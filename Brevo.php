@@ -1,6 +1,6 @@
 <?php
 
-require('./CrmInterface.php');
+require(__DIR__ . '/CrmInterface.php');
 
 
 /**
@@ -134,7 +134,7 @@ class Brevo implements CrmInterface {
     $contactId = 0;
     if (isset($responseJson->id))
       $contactId = $responseJson->id;
-  
+
     return $contactId;
   }
 
