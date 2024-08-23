@@ -51,7 +51,7 @@ $brevo = new Brevo(BREVO_URL, BREVO_APIKEY);
 
 // Send email
 // $data = array(
-//   'email' => 'david@davidrios.co',
-//   'firstname' => 'David'
+//   'EMAIL' => 'david@davidrios.co',
+//   'FIRSTNAME' => 'David'
 // );
 // var_dump($brevo->sendEmail(BREVO_TEMPLATE, $data));
